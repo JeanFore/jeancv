@@ -60,7 +60,7 @@ const CodeParallaxBackground: React.FC = () => {
   const { scrollY } = useScroll();
   const y = useTransform(scrollY, [0, 3600], [24, -130]);
   const x = useTransform(scrollY, [0, 3600], [0, 26]);
-  const opacity = useTransform(scrollY, [0, 140, 1800], [0.46, 0.66, 0.9]);
+  const opacity = useTransform(scrollY, [0, 140, 1800], [0.44, 0.5, 0.44]);
 
   const lines = useMemo(() => extractLines(globeRaw), []);
   const [startLineIndex, setStartLineIndex] = useState(0);
