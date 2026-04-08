@@ -30,8 +30,9 @@ const KEYWORDS = new Set([
   'useSpring',
 ]);
 
-const MIN_VISIBLE_LINES = 12;
-const LINE_SCROLL_STEP = 18;
+const MIN_VISIBLE_LINES = 10;
+const LINE_SCROLL_STEP = 22;
+const LINES_EXPAND_SCROLL_DISTANCE = 1400;
 
 const TOKEN_PATTERN =
   /(["'`][^"'`]*["'`]|[A-Za-z_$][A-Za-z0-9_$]*|[0-9]+(?:\.[0-9]+)?|[{}[\]().,:;<>+=*/-]|=>|\s+|.)/g;
@@ -67,12 +68,14 @@ const CodeParallaxBackground: React.FC = () => {
 
   const lines = useMemo(() => extractLines(globeRaw), []);
   const [startLineIndex, setStartLineIndex] = useState(0);
-  const [visibleLineCount, setVisibleLineCount] = useState(18);
+  const [visibleLineCount, setVisibleLineCount] = useState(MIN_VISIBLE_LINES);
   const [maxVisibleLines, setMaxVisibleLines] = useState(34);
 
   const updateVisibleWindow = useCallback((latestScrollY: number) => {
     const maxVisible = Math.max(1, Math.min(lines.length, maxVisibleLines));
-    const nextVisibleCount = Math.min(lines.length, Math.max(MIN_VISIBLE_LINES, maxVisible));
+    const minVisible = Math.min(maxVisible, MIN_VISIBLE_LINES);
+    const growthProgress = Math.min(1, Math.max(0, latestScrollY / LINES_EXPAND_SCROLL_DISTANCE));
+    const nextVisibleCount = Math.round(minVisible + (maxVisible - minVisible) * growthProgress);
     const maxStart = Math.max(0, lines.length - nextVisibleCount);
     const nextStart = Math.min(maxStart, Math.max(0, Math.floor(latestScrollY / LINE_SCROLL_STEP)));
 

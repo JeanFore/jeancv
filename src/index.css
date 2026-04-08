@@ -704,7 +704,9 @@ ul {
 
 /* Experience */
 .experience-card {
-  --experience-card-bg-strong: rgba(17, 24, 39, 0.4);
+  --experience-card-bg-strong: rgba(2, 6, 23, 0.97);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
 }
 
 /* Contact Section */
@@ -1382,7 +1384,7 @@ ul {
 
   .experience-card {
     padding-right: 2.2rem !important;
-    --experience-card-bg-strong: rgba(2, 6, 23, 0.9);
+    --experience-card-bg-strong: rgba(2, 6, 23, 0.97);
   }
 }
 

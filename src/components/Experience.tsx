@@ -28,7 +28,7 @@ const TimelineItem: React.FC<{ xp: any; index: number }> = ({ xp, index }) => {
   const isMixed = xp.type === 'mixed';
   const color = isTech ? 'var(--accent-dev)' : isMixed ? '#10b981' : 'var(--accent-admin)';
   const glow = isTech ? 'var(--accent-dev-glow)' : isMixed ? 'rgba(16, 185, 129, 0.4)' : 'var(--accent-admin-glow)';
-  const bgSoft = isTech ? 'rgba(59, 130, 246, 0.05)' : isMixed ? 'rgba(16, 185, 129, 0.05)' : 'rgba(245, 158, 11, 0.05)';
+  const bgSoft = isTech ? 'rgba(59, 130, 246, 0.18)' : isMixed ? 'rgba(16, 185, 129, 0.17)' : 'rgba(245, 158, 11, 0.18)';
   
   const Icon = isTech ? Code : isMixed ? Network : Briefcase;
 
@@ -87,7 +87,9 @@ const TimelineItem: React.FC<{ xp: any; index: number }> = ({ xp, index }) => {
             padding: '2.5rem', 
             position: 'relative',
             borderTop: `4px solid ${color}`,
-            background: `linear-gradient(135deg, ${bgSoft}, var(--experience-card-bg-strong, rgba(17, 24, 39, 0.9)))`,
+            background: `linear-gradient(145deg, ${bgSoft} 0%, var(--experience-card-bg-strong, rgba(2, 6, 23, 0.97)) 58%)`,
+            backdropFilter: 'none',
+            WebkitBackdropFilter: 'none',
             transition: 'transform 0.3s ease, box-shadow 0.3s ease'
           }}
           onMouseOver={(e) => {
