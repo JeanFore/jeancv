@@ -253,12 +253,10 @@ const About: React.FC = () => {
           {data.personal.extraNarrative && (
             <motion.div
               variants={itemVariants}
-              className="glass bento-span-full"
+              className="bento-span-full about-focus-card"
               style={{
                 padding: '3rem',
-                background: 'linear-gradient(145deg, rgba(14, 165, 233, 0.08), rgba(15, 23, 42, 0.7))',
                 borderLeft: '4px solid var(--accent-dev)',
-                boxShadow: '0 10px 40px rgba(14, 165, 233, 0.07)',
               }}
             >
               <h3
