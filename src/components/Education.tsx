@@ -1,45 +1,26 @@
 import React, { useRef, useState, useEffect } from 'react';
-import { motion, useScroll, useVelocity, useSpring, useTransform, useAnimationFrame, useMotionValue, animate } from 'framer-motion';
+import { motion, useTransform, useMotionValue, animate } from 'framer-motion';
 import { useLanguage } from './LanguageContext';
 import { GraduationCap, ChevronLeft, ChevronRight } from 'lucide-react';
 
 const FloatingCard = ({
   edu,
-  index,
   color,
   glow,
   t,
   isMobile,
 }: {
   edu: any;
-  index: number;
   color: string;
   glow: string;
   t: any;
   isMobile: boolean;
 }) => {
-  const y = useMotionValue(0);
-  
-  // Deterministic seed so copies of the card move in identical sync, preventing visual splits on wrap
-  const seed = index * 2.5;
-
-  useAnimationFrame((time) => {
-    if (isMobile) {
-      y.set(0);
-      return;
-    }
-
-    // Slower, organic breathing wobble (Math.sin)
-    const wobble = Math.sin(time / 1200 + seed) * 18;
-    y.set(wobble);
-  });
-
   return (
     <motion.div 
       className="glass-static"
       data-edu-card="true"
       style={{ 
-        y, 
         width: isMobile ? 'min(90vw, 360px)' : '500px',
         maxWidth: isMobile ? '90vw' : '500px',
         minHeight: isMobile ? '300px' : '400px',
@@ -122,24 +103,11 @@ const FloatingCard = ({
 const Education: React.FC = () => {
   const { data, t } = useLanguage();
   const [isMobile, setIsMobile] = useState(false);
-  const [activeControls, setActiveControls] = useState({ left: false, right: false });
   const [mobileStep, setMobileStep] = useState(0);
+  const [desktopStep, setDesktopStep] = useState(0);
   const [mobileCenterOffset, setMobileCenterOffset] = useState(0);
-  
-  const baseVelocity = isMobile ? -0.55 : -1; // pixels moved independently per frame
   const baseX = useMotionValue(0);
-  const mobileShiftAnimationRef = useRef<ReturnType<typeof animate> | null>(null);
-  
-  // Track continuous global scroll inertia
-  const { scrollY } = useScroll();
-  const scrollVelocity = useVelocity(scrollY);
-  const smoothVelocity = useSpring(scrollVelocity, {
-    damping: 50,
-    stiffness: 400
-  });
-  const velocityFactor = useTransform(smoothVelocity, [0, 1000], [0, 5], {
-    clamp: false
-  });
+  const shiftAnimationRef = useRef<ReturnType<typeof animate> | null>(null);
 
   const [contentWidth, setContentWidth] = useState(0);
   const measureRef = useRef<HTMLDivElement>(null);
@@ -157,18 +125,19 @@ const Education: React.FC = () => {
       if (!measureRef.current) return;
 
       setContentWidth(measureRef.current.offsetWidth);
+      const firstCard = measureRef.current.querySelector<HTMLElement>('[data-edu-card="true"]');
+      if (!firstCard) return;
+
+      const trackStyle = window.getComputedStyle(measureRef.current);
+      const gap = Number.parseFloat(trackStyle.gap || '16') || 16;
+      const nextStep = firstCard.offsetWidth + gap;
 
       if (isMobile) {
-        const firstCard = measureRef.current.querySelector<HTMLElement>('[data-edu-card="true"]');
-        if (firstCard) {
-          const viewportWidth = viewportRef.current?.offsetWidth ?? window.innerWidth;
-          const trackStyle = window.getComputedStyle(measureRef.current);
-          const gap = Number.parseFloat(trackStyle.gap || '16') || 16;
-
-          setMobileStep(firstCard.offsetWidth + gap);
-          setMobileCenterOffset(Math.max(0, (viewportWidth - firstCard.offsetWidth) / 2));
-        }
+        const viewportWidth = viewportRef.current?.offsetWidth ?? window.innerWidth;
+        setMobileStep(nextStep);
+        setMobileCenterOffset(Math.max(0, (viewportWidth - firstCard.offsetWidth) / 2));
       } else {
+        setDesktopStep(nextStep);
         setMobileCenterOffset(0);
       }
     };
@@ -181,28 +150,9 @@ const Education: React.FC = () => {
 
   useEffect(() => {
     return () => {
-      mobileShiftAnimationRef.current?.stop();
+      shiftAnimationRef.current?.stop();
     };
   }, []);
-
-  const isControlActive = activeControls.left || activeControls.right;
-
-  useAnimationFrame((_, delta) => {
-    if (contentWidth > 0) {
-      if (isMobile) return;
-      if (isControlActive) return;
-
-      let moveBy = baseVelocity * (delta / 16);
-      
-      // Inject scroll friction/inertia into the mathematical movement algorithm
-      const v = velocityFactor.get();
-      if (v !== 0) {
-        moveBy += v * 2; 
-      }
-      
-      baseX.set(baseX.get() + moveBy);
-    }
-  });
 
   const x = useTransform(() => {
     if (contentWidth === 0) return "0px";
@@ -222,7 +172,7 @@ const Education: React.FC = () => {
       {data.education.map((edu, i) => {
         const color = i % 2 === 0 ? 'var(--accent-dev)' : 'var(--accent-admin)';
         const glow = i % 2 === 0 ? 'rgba(59, 130, 246, 0.15)' : 'rgba(245, 158, 11, 0.15)';
-        return <FloatingCard key={i} edu={edu} index={i} color={color} glow={glow} t={t} isMobile={isMobile} />
+        return <FloatingCard key={i} edu={edu} color={color} glow={glow} t={t} isMobile={isMobile} />
       })}
     </div>
   );
@@ -244,24 +194,20 @@ const Education: React.FC = () => {
     WebkitTapHighlightColor: 'transparent',
   };
 
-  const setControlState = (side: 'left' | 'right', active: boolean) => {
-    setActiveControls((previous) => {
-      if (previous[side] === active) return previous;
-      return { ...previous, [side]: active };
-    });
-  };
+  const shiftCards = (side: 'left' | 'right') => {
+    if (contentWidth <= 0) return;
 
-  const shiftMobileCards = (side: 'left' | 'right') => {
-    if (!isMobile || contentWidth <= 0) return;
-
-    const fallbackStep = Math.min(window.innerWidth * 0.9, 360) + 16;
-    const step = mobileStep > 0 ? mobileStep : fallbackStep;
+    const mobileFallback = Math.min(window.innerWidth * 0.9, 360) + 16;
+    const desktopFallback = 500 + 48;
+    const step = isMobile
+      ? (mobileStep > 0 ? mobileStep : mobileFallback)
+      : (desktopStep > 0 ? desktopStep : desktopFallback);
     const direction = side === 'right' ? 1 : -1;
     const target = baseX.get() + direction * step;
 
-    mobileShiftAnimationRef.current?.stop();
-    mobileShiftAnimationRef.current = animate(baseX, target, {
-      duration: 0.35,
+    shiftAnimationRef.current?.stop();
+    shiftAnimationRef.current = animate(baseX, target, {
+      duration: isMobile ? 0.35 : 0.42,
       ease: [0.22, 1, 0.36, 1],
     });
   };
@@ -307,25 +253,13 @@ const Education: React.FC = () => {
       <div ref={viewportRef} style={{ position: 'relative', width: '100%', overflow: 'hidden' }}>
         <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', zIndex: 15 }}>
           <div
-            onMouseEnter={() => setControlState('left', true)}
-            onMouseLeave={() => setControlState('left', false)}
-            onPointerDown={() => {
-              if (isMobile) return;
-              setControlState('left', true);
-            }}
             onClick={(event) => {
               event.preventDefault();
-              if (isMobile) shiftMobileCards('left');
+              shiftCards('left');
             }}
             onContextMenu={(event) => event.preventDefault()}
-            onPointerUp={() => {
-              if (!isMobile) setControlState('left', false);
-            }}
-            onPointerCancel={() => {
-              if (!isMobile) setControlState('left', false);
-            }}
-            onPointerLeave={() => {
-              if (!isMobile) setControlState('left', false);
+            onPointerDown={(event) => {
+              if (isMobile) event.preventDefault();
             }}
             style={
               isMobile
@@ -364,16 +298,7 @@ const Education: React.FC = () => {
             }
           >
             <div
-              style={{
-                ...hoverBtnStyle,
-                ...(!isMobile && activeControls.left
-                  ? {
-                      background: 'var(--accent-dev)',
-                      borderColor: 'var(--accent-dev)',
-                      boxShadow: '0 10px 40px var(--accent-dev-glow), inset 0 0 20px rgba(255,255,255,0.4)',
-                    }
-                  : {}),
-              }}
+              style={hoverBtnStyle}
               onMouseOver={(e) => {
                 if (isMobile) return;
                 e.currentTarget.style.transform = 'scale(1.1)';
@@ -394,25 +319,13 @@ const Education: React.FC = () => {
           </div>
 
           <div
-            onMouseEnter={() => setControlState('right', true)}
-            onMouseLeave={() => setControlState('right', false)}
-            onPointerDown={() => {
-              if (isMobile) return;
-              setControlState('right', true);
-            }}
             onClick={(event) => {
               event.preventDefault();
-              if (isMobile) shiftMobileCards('right');
+              shiftCards('right');
             }}
             onContextMenu={(event) => event.preventDefault()}
-            onPointerUp={() => {
-              if (!isMobile) setControlState('right', false);
-            }}
-            onPointerCancel={() => {
-              if (!isMobile) setControlState('right', false);
-            }}
-            onPointerLeave={() => {
-              if (!isMobile) setControlState('right', false);
+            onPointerDown={(event) => {
+              if (isMobile) event.preventDefault();
             }}
             style={
               isMobile
@@ -452,16 +365,7 @@ const Education: React.FC = () => {
             }
           >
             <div
-              style={{
-                ...hoverBtnStyle,
-                ...(!isMobile && activeControls.right
-                  ? {
-                      background: 'var(--accent-admin)',
-                      borderColor: 'var(--accent-admin)',
-                      boxShadow: '0 10px 40px var(--accent-admin-glow), inset 0 0 20px rgba(255,255,255,0.4)',
-                    }
-                  : {}),
-              }}
+              style={hoverBtnStyle}
               onMouseOver={(e) => {
                 if (isMobile) return;
                 e.currentTarget.style.transform = 'scale(1.1)';
