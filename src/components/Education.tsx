@@ -124,7 +124,7 @@ const Education: React.FC = () => {
     }
   }, [data.education]);
 
-  useAnimationFrame((time, delta) => {
+  useAnimationFrame((_, delta) => {
     if (contentWidth > 0) {
       let moveBy = baseVelocity * (delta / 16);
       

@@ -9,7 +9,11 @@ const Hero: React.FC = () => {
   const yOffset = useTransform(scrollY, [0, 300], [0, 100]);
 
   return (
-    <section id="hero" style={{ height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative', overflow: 'hidden' }}>
+    <section
+      id="hero"
+      className="hero-section"
+      style={{ height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative', overflow: 'hidden' }}
+    >
       {/* Background glow effects */}
       <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', width: '100vw', height: '100vh', overflow: 'hidden', zIndex: 0, pointerEvents: 'none' }}>
         <div style={{ position: 'absolute', top: '20%', left: '20%', width: '40vw', height: '40vw', background: 'var(--accent-dev-glow)', filter: 'blur(120px)', borderRadius: '50%', opacity: 0.3, mixBlendMode: 'screen' }} />
@@ -20,14 +24,16 @@ const Hero: React.FC = () => {
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8, ease: "easeOut" }}
-        style={{ textAlign: 'center', zIndex: 1, opacity, y: yOffset }}
+        className="hero-content"
+        style={{ zIndex: 1, opacity, y: yOffset }}
       >
         {/* Profile Image - LinkedIn Premium Style */}
         <motion.div
            initial={{ scale: 0.8, opacity: 0 }}
            animate={{ scale: 1, opacity: 1 }}
            transition={{ delay: 0.1, type: "spring", stiffness: 100 }}
-           style={{ marginBottom: '2.5rem', position: 'relative', display: 'inline-block' }}
+           className="hero-profile-wrap"
+           style={{ marginBottom: '2.5rem', position: 'relative' }}
         >
           <div style={{
             width: '200px',
@@ -99,13 +105,13 @@ const Hero: React.FC = () => {
           />
         </motion.div>
 
-        <h1 style={{ fontSize: 'clamp(2.5rem, 6vw, 5rem)', marginBottom: '0.5rem', color: 'var(--fg)', letterSpacing: '-0.03em', fontWeight: 900 }}>
+        <h1 className="hero-name" style={{ fontSize: 'clamp(2.5rem, 6vw, 5rem)', marginBottom: '0.5rem', color: 'var(--fg)', letterSpacing: '-0.03em', fontWeight: 900 }}>
           {data.personal.name}
         </h1>
-        <h2 style={{ fontSize: 'clamp(1.2rem, 3vw, 2rem)', color: 'transparent', backgroundImage: 'linear-gradient(90deg, var(--accent-dev), var(--accent-admin))', WebkitBackgroundClip: 'text', backgroundClip: 'text', fontWeight: 600, marginBottom: '1rem', letterSpacing: '0.02em' }}>
+        <h2 className="hero-title" style={{ fontSize: 'clamp(1.2rem, 3vw, 2rem)', color: 'transparent', backgroundImage: 'linear-gradient(90deg, var(--accent-dev), var(--accent-admin))', WebkitBackgroundClip: 'text', backgroundClip: 'text', fontWeight: 600, marginBottom: '1rem', letterSpacing: '0.02em' }}>
           {data.personal.title}
         </h2>
-        <p style={{ fontSize: 'clamp(1rem, 1.5vw, 1.2rem)', color: 'var(--fg-secondary)', maxWidth: '650px', margin: '0 auto', opacity: 0.8, lineHeight: 1.7, fontWeight: 300 }}>
+        <p className="hero-subtitle" style={{ fontSize: 'clamp(1rem, 1.5vw, 1.2rem)', color: 'var(--fg-secondary)', maxWidth: '650px', margin: '0 auto', opacity: 0.8, lineHeight: 1.7, fontWeight: 300 }}>
           {data.personal.subtitle}
         </p>
         
@@ -113,9 +119,10 @@ const Hero: React.FC = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.4 }}
+          className="hero-cta-wrap"
           style={{ marginTop: '3rem' }}
         >
-          <a href="#about" style={{ 
+          <a href="#about" className="hero-cta" style={{ 
             padding: '1rem 2.5rem', 
             background: 'var(--fg)', 
             color: 'var(--bg)', 

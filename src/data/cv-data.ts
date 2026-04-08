@@ -9,6 +9,7 @@ export interface CVContent {
     subtitle: string;
     location: string;
     about: string;
+    extraNarrative?: string;
     image: string;
   };
   experience: Array<{
@@ -43,6 +44,30 @@ export interface CVContent {
   };
 }
 
+const targetCompany = import.meta.env.VITE_TARGET_COMPANY?.toLowerCase() || '';
+
+const defaultAboutEn = "A hybrid leader who bridges the gap between complex engineering (Construction/Admin) and modern software architecture. Decided to pivot to Full Stack development within a year, leveraging strong deductive logic and problem-solving skills to reach Technical Lead status. Expert at translating business/financial needs into scalable technical solutions.";
+
+const sigmaAboutEn = "A hybrid leader bridging complex engineering, corporate finance, and modern software architecture. My career evolved from resource management to earning a Master's in Finance and operating as an Options Trader. This unique trajectory drove me into tech, where I rapidly advanced to a Technical Lead building scalable enterprise solutions (Java, React, AWS). I am particularly drawn to Sigma Trade because it stands at the exact intersection of my expertise: high-performance software engineering and financial markets. I aim to build robust trading systems where my deep understanding of risk hedging and derivatives accelerates the creation of superior technological solutions.";
+
+const sigmaExtraEn = `Hello [SIGMA_LOGO],\n\nI wanted to write to you because I feel a real connection between what you build and the path I have been traveling.\n\nI didn't arrive in the world of options by chance. I actually started getting interested in this topic by watching you on YouTube, and since then I have followed you across different platforms. To a large extent, my entry into this world was born from that content and from that way of showing that there was a more serious and structured way of understanding options.\n\nMy professional history hasn't been that of someone who solely comes from frontend development. In fact, my path has been much broader. I have experience as a developer, but also as someone who understands business, coordinates projects, prioritizes, connects teams, and looks for opportunities for improvement. That's why today I consider myself much more of a full-stack profile, with product vision, cloud knowledge, databases, and a comprehensive look at how to build solutions that truly generate value.\n\nFurthermore, my relationship with this world is not purely technical. Since I started studying and trading options, I have been understanding much more about trader logic, the importance of user experience, operational clarity, risk management, and the value of a well-thought-out platform. That makes me feel I could contribute to you from a different angle: not just as someone who develops interfaces, but as someone who understands the problem, the user, and the product.\n\nI feel that with you there could be a very valuable end-to-end collaboration, because you wouldn't just be adding a frontend developer, but a person with full-stack vision, business criteria, experience coordinating projects, and a genuine connection with the world of options that you help bring closer to so many people.\n\nI would very much like to have the opportunity to talk with you.`;
+
+const getAboutTextEn = () => {
+  if (targetCompany.includes('sigma')) return sigmaAboutEn;
+  return defaultAboutEn;
+};
+
+const defaultAboutEs = "Un líder híbrido que tiende puentes entre la ingeniería compleja (Construcción/Admin) y la arquitectura de software moderna. Decidió pivotar al desarrollo Full Stack en un año, aprovechando una fuerte lógica deductiva y habilidades de resolución de problemas para alcanzar el estatus de Technical Lead. Experto en traducir necesidades comerciales/financieras en soluciones técnicas escalables.";
+
+const sigmaAboutEs = "Un líder híbrido que tiende puentes entre la ingeniería compleja, las finanzas corporativas y la arquitectura de software moderna. Mi carrera evolucionó desde la gestión de recursos hasta obtener un Máster en Finanzas y operar como Trader de Opciones. Esta trayectoria me impulsó hacia la tecnología, donde alcancé el nivel de Technical Lead construyendo plataformas escalables (Java, React, AWS). Me interesa profundamente Sigma Trade porque representa la intersección exacta de mis áreas de mayor conocimiento: la ingeniería de software de alto rendimiento y los mercados financieros. Busco construir sistemas de trading verdaderamente robustos donde mi conocimiento en cobertura de riesgos y derivados sirva de catalizador para crear soluciones superiores.";
+
+const sigmaExtraEs = `Hola [SIGMA_LOGO],\n\nQuería escribirles porque siento que hay una conexión real entre lo que ustedes construyen y el camino que yo he venido recorriendo.\n\nYo no llegué al mundo de las opciones por casualidad. Realmente empecé a interesarme en este tema viéndolos a ustedes en YouTube, y desde entonces los he seguido en distintos medios. En buena parte, mi entrada a este mundo nació por ese contenido y por esa forma de mostrar que había una manera más seria y estructurada de entender las opciones.\n\nMi historia profesional no ha sido la de alguien que viene únicamente del desarrollo frontend. De hecho, mi camino ha sido mucho más amplio. He tenido experiencia como desarrollador, pero también como alguien que entiende negocio, coordina proyectos, prioriza, conecta equipos y busca oportunidades de mejora. Por eso hoy me considero mucho más un perfil fullstack, con visión de producto, conocimiento de nube, bases de datos y una mirada integral sobre cómo construir soluciones que realmente generen valor.\n\nAdemás, mi relación con este mundo no es solo técnica. Desde que empecé a estudiar y operar opciones, he ido entendiendo mucho más la lógica del trader, la importancia de la experiencia de usuario, la claridad operativa, la gestión del riesgo y el valor de una plataforma bien pensada. Eso hace que sienta que podría aportarles desde un lugar distinto: no solo como alguien que desarrolla interfaces, sino como alguien que entiende el problema, el usuario y el producto.\n\nSiento que con ustedes podría haber una colaboración muy valiosa de punta a punta, porque no estarían sumando solo un desarrollador frontend, sino una persona con visión fullstack, criterio de negocio, experiencia coordinando proyectos y una conexión genuina con el mundo de las opciones que ustedes ayudan a acercar a tantas personas.\n\nMe gustaría mucho tener la oportunidad de conversar con ustedes.`;
+
+const getAboutTextEs = () => {
+  if (targetCompany.includes('sigma')) return sigmaAboutEs;
+  return defaultAboutEs;
+};
+
 export const cvData: Record<string, CVContent> = {
   en: {
     personal: {
@@ -50,7 +75,8 @@ export const cvData: Record<string, CVContent> = {
       title: "Software Technical Lead",
       subtitle: "Administrative & Architectural Construction Engineer / Full Stack Developer",
       location: "Mexico / Colombia",
-      about: "A hybrid leader who bridges the gap between complex engineering (Construction/Admin) and modern software architecture. Decided to pivot to Full Stack development within a year, leveraging strong deductive logic and problem-solving skills to reach Technical Lead status. Expert at translating business/financial needs into scalable technical solutions.",
+      about: getAboutTextEn(),
+      extraNarrative: targetCompany.includes('sigma') ? sigmaExtraEn : undefined,
       image: "https://media.licdn.com/dms/image/v2/D4E03AQHW9btMGs2XJQ/profile-displayphoto-scale_200_200/B4EZt_tnepIgAY-/0/1767374226891?e=1776902400&v=beta&t=pC_isA_BqsUala5T0NqJ-dPALyUL74-SmRGAgEEcJ0k",
     },
     experience: [
@@ -238,7 +264,8 @@ export const cvData: Record<string, CVContent> = {
       title: "Líder Técnico de Software",
       subtitle: "Administrador y Constructor Arquitectónico / Desarrollador Full Stack",
       location: "México / Colombia",
-      about: "Un líder híbrido que tiende puentes entre la ingeniería compleja (Construcción/Admin) y la arquitectura de software moderna. Decidió pivotar al desarrollo Full Stack en un año, aprovechando una fuerte lógica deductiva y habilidades de resolución de problemas para alcanzar el estatus de Technical Lead. Experto en traducir necesidades comerciales/financieras en soluciones técnicas escalables.",
+      about: getAboutTextEs(),
+      extraNarrative: targetCompany.includes('sigma') ? sigmaExtraEs : undefined,
       image: "https://media.licdn.com/dms/image/v2/D4E03AQHW9btMGs2XJQ/profile-displayphoto-scale_200_200/B4EZt_tnepIgAY-/0/1767374226891?e=1776902400&v=beta&t=pC_isA_BqsUala5T0NqJ-dPALyUL74-SmRGAgEEcJ0k",
     },
     experience: [

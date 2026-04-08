@@ -58,13 +58,13 @@ const renderHighlightedLine = (line: string) => {
 
 const CodeParallaxBackground: React.FC = () => {
   const { scrollY } = useScroll();
-  const y = useTransform(scrollY, [0, 3600], [24, -130]);
-  const x = useTransform(scrollY, [0, 3600], [0, 26]);
-  const opacity = useTransform(scrollY, [0, 140, 1800], [0.44, 0.5, 0.44]);
+  const y = useTransform(scrollY, [0, 3600], [20, -140]);
+  const x = useTransform(scrollY, [0, 3600], [0, 30]);
+  const opacity = useTransform(scrollY, [0, 140, 1800], [0.56, 0.78, 0.68]);
 
   const lines = useMemo(() => extractLines(globeRaw), []);
   const [startLineIndex, setStartLineIndex] = useState(0);
-  const [visibleLineCount, setVisibleLineCount] = useState(12);
+  const [visibleLineCount, setVisibleLineCount] = useState(18);
   const [maxVisibleLines, setMaxVisibleLines] = useState(34);
 
   const updateVisibleWindow = (latestScrollY: number) => {
