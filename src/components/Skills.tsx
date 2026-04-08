@@ -1,32 +1,51 @@
-import React, { useRef } from 'react';
-import { motion, useScroll, useTransform } from 'framer-motion';
+import React, { useRef, useState, useEffect } from 'react';
+import { motion, useMotionValue, useTransform, useScroll, useAnimationFrame } from 'framer-motion';
 import { useLanguage } from './LanguageContext';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 
-const Skills: React.FC = () => {
-  const { data, t } = useLanguage();
-  const containerRef = useRef<HTMLElement>(null);
+const InfiniteMarquee: React.FC<{
+  items: string[];
+  baseSpeed: number;
+  panDirection: number;
+  scrollMultiplier: number;
+  color: string;
+  scrollYProgress: any;
+}> = ({ items, baseSpeed, panDirection, scrollMultiplier, color, scrollYProgress }) => {
+  const [contentWidth, setContentWidth] = useState(0);
+  const measureRef = useRef<HTMLDivElement>(null);
+  const hoverOffset = useMotionValue(0);
 
-  const { scrollYProgress } = useScroll({
-    target: containerRef,
-    offset: ["start end", "end start"]
+  useEffect(() => {
+    if (measureRef.current) {
+      setContentWidth(measureRef.current.offsetWidth);
+    }
+  }, [items]);
+
+  useAnimationFrame((time, delta) => {
+    if (contentWidth > 0 && panDirection !== 0) {
+      hoverOffset.set(hoverOffset.get() + panDirection * baseSpeed * delta);
+    }
   });
 
-  // Fast moving
-  const x1 = useTransform(scrollYProgress, [0, 1], ["0%", "-40%"]);
-  // Fast moving opposite direction
-  const x2 = useTransform(scrollYProgress, [0, 1], ["-40%", "0%"]);
-  // Slower moving
-  const x3 = useTransform(scrollYProgress, [0, 1], ["-10%", "-50%"]);
+  const scrollOffset = useTransform(scrollYProgress, [0, 1], [0, scrollMultiplier]);
 
-  // Group items into specific lanes to ensure they are long enough for parallax
-  // We duplicate the arrays to ensure the screen is filled during translation
-  const devRow = [...data.skills.frontend, ...data.skills.backend, ...data.skills.frontend, ...data.skills.backend];
-  const adminRow = [...data.skills.admin, ...data.skills.admin, ...data.skills.admin, ...data.skills.admin];
-  const cloudRow = [...data.skills.cloud, ...data.skills.cloud, ...data.skills.cloud, ...data.skills.cloud];
+  const x = useTransform(() => {
+    if (contentWidth === 0) return "0px";
+    
+    // Combine manual hover panning with native scroll parallax
+    const absoluteDisplacement = hoverOffset.get() + scrollOffset.get();
+    
+    // Math logic to perfectly wrap the displacement.
+    // It yields a continuous value from 0 to contentWidth, seamlessly snapping back.
+    const wrapped = ((absoluteDisplacement % contentWidth) + contentWidth) % contentWidth;
+    
+    return `-${wrapped}px`;
+  });
 
-  const ParallaxRow = ({ items, x, color }: { items: string[], x: any, color: string }) => (
-    <motion.div 
-      style={{ x, display: 'flex', gap: '2rem', whiteSpace: 'nowrap', width: 'fit-content', padding: '1.5rem 0' }}
+  const generateItems = (isMeasured: boolean) => (
+    <div 
+      ref={isMeasured ? measureRef : null}
+      style={{ display: 'flex', gap: '2rem', paddingRight: '2rem', whiteSpace: 'nowrap', width: 'max-content', paddingBottom: '1.5rem', paddingTop: '1.5rem' }}
     >
       {items.map((item, index) => (
         <span 
@@ -37,23 +56,79 @@ const Skills: React.FC = () => {
             fontSize: '1.2rem',
             fontWeight: 600,
             color: 'var(--fg)',
-            border: `1px solid ${color}40`, // 40 is hex for 25% opacity
+            border: `1px solid ${color}40`, 
             borderRadius: '100px',
             boxShadow: '0 4px 20px rgba(0,0,0,0.3)',
             display: 'inline-flex',
             alignItems: 'center',
-            gap: '0.5rem'
+            gap: '0.5rem',
+            transition: 'transform 0.2s',
+            cursor: 'default'
+          }}
+          onMouseOver={(e) => {
+             e.currentTarget.style.transform = 'scale(1.05)';
+             e.currentTarget.style.borderColor = color;
+             e.currentTarget.style.boxShadow = `0 10px 30px rgba(0,0,0,0.5), 0 0 15px ${color}40`;
+          }}
+          onMouseOut={(e) => {
+             e.currentTarget.style.transform = 'scale(1)';
+             e.currentTarget.style.borderColor = `${color}40`;
+             e.currentTarget.style.boxShadow = '0 4px 20px rgba(0,0,0,0.3)';
           }}
         >
           <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: color, boxShadow: `0 0 10px ${color}` }} />
           {item}
         </span>
       ))}
-    </motion.div>
+    </div>
   );
 
   return (
-    <section ref={containerRef} id="skills" style={{ padding: '8rem 0', overflow: 'hidden' }}>
+    <motion.div style={{ x, display: 'flex', width: 'max-content', pointerEvents: 'auto' }}>
+      {/* We render exactly 2 copies. The first dictates size, the second guarantees seamless visual wrapping when translating up to -100% */}
+      {generateItems(true)}
+      {generateItems(false)}
+    </motion.div>
+  );
+};
+
+
+const Skills: React.FC = () => {
+  const { data, t } = useLanguage();
+  const containerRef = useRef<HTMLElement>(null);
+  
+  const { scrollYProgress } = useScroll({
+    target: containerRef,
+    offset: ["start end", "end start"]
+  });
+
+  const [panDirection, setPanDirection] = useState(0);
+
+  // We duplicate the arrays to ensure a single copy is comfortably wider than full screens
+  const devRow = [...data.skills.frontend, ...data.skills.backend, ...data.skills.frontend, ...data.skills.backend];
+  const adminRow = [...data.skills.admin, ...data.skills.admin, ...data.skills.admin, ...data.skills.admin];
+  const cloudRow = [...data.skills.cloud, ...data.skills.cloud, ...data.skills.cloud, ...data.skills.cloud];
+
+  const hoverBtnStyle = {
+    width: '60px',
+    height: '60px',
+    borderRadius: '50%',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    background: 'rgba(15, 23, 42, 0.8)',
+    border: '1px solid var(--border)',
+    boxShadow: '0 10px 30px rgba(0,0,0,0.5), inset 0 0 20px rgba(255,255,255,0.05)',
+    transition: 'all 0.3s ease',
+    color: 'var(--fg)'
+  };
+
+  return (
+    <section 
+      ref={containerRef} 
+      id="skills" 
+      style={{ padding: '8rem 0', position: 'relative' }}
+    >
       <div className="container" style={{ marginBottom: '4rem', textAlign: 'center' }}>
         <motion.h2 
           initial={{ opacity: 0, scale: 0.9 }}
@@ -64,27 +139,106 @@ const Skills: React.FC = () => {
           {t('coreSkills')}
         </motion.h2>
         <p style={{ color: 'var(--fg-secondary)', fontSize: '1.2rem', maxWidth: '600px', margin: '0 auto' }}>
-          Un conjunto híbrido de habilidades que fusionan la ingeniería de software moderna con el liderazgo administrativo estratégico.
+          {t('skillsSubtitle')}
         </p>
       </div>
       
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-        <div style={{ position: 'relative' }}>
-           <div style={{ position: 'absolute', top: 0, left: 0, bottom: 0, width: '150px', background: 'linear-gradient(to right, var(--bg), transparent)', zIndex: 2 }} />
-           <div style={{ position: 'absolute', top: 0, right: 0, bottom: 0, width: '150px', background: 'linear-gradient(to left, var(--bg), transparent)', zIndex: 2 }} />
-           <ParallaxRow items={devRow} x={x1} color="var(--accent-dev)" />
-        </div>
+      <div style={{ position: 'relative', width: '100%', overflow: 'hidden' }}>
         
-        <div style={{ position: 'relative' }}>
-           <div style={{ position: 'absolute', top: 0, left: 0, bottom: 0, width: '150px', background: 'linear-gradient(to right, var(--bg), transparent)', zIndex: 2 }} />
-           <div style={{ position: 'absolute', top: 0, right: 0, bottom: 0, width: '150px', background: 'linear-gradient(to left, var(--bg), transparent)', zIndex: 2 }} />
-           <ParallaxRow items={adminRow} x={x2} color="var(--accent-admin)" />
+        {/* Active Hover Navigation Overlay */}
+        <div style={{ position: 'absolute', top: 0, bottom: 0, left: 0, right: 0, pointerEvents: 'none', zIndex: 20 }}>
+          
+          <div 
+            onMouseEnter={() => setPanDirection(1)} 
+            onMouseLeave={() => setPanDirection(0)}
+            style={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: '15vw', minWidth: '80px', pointerEvents: 'auto', display: 'flex', alignItems: 'center', paddingLeft: '2vw', cursor: 'grab' }}
+          >
+             <div 
+               style={hoverBtnStyle}
+               onMouseOver={(e) => {
+                 e.currentTarget.style.transform = 'scale(1.1)';
+                 e.currentTarget.style.background = 'var(--accent-dev)';
+                 e.currentTarget.style.borderColor = 'var(--accent-dev)';
+                 e.currentTarget.style.boxShadow = '0 10px 40px var(--accent-dev-glow), inset 0 0 20px rgba(255,255,255,0.4)';
+               }}
+               onMouseOut={(e) => {
+                 e.currentTarget.style.transform = 'scale(1)';
+                 e.currentTarget.style.background = 'rgba(15, 23, 42, 0.8)';
+                 e.currentTarget.style.borderColor = 'var(--border)';
+                 e.currentTarget.style.boxShadow = '0 10px 30px rgba(0,0,0,0.5), inset 0 0 20px rgba(255,255,255,0.05)';
+               }}
+             >
+               <ChevronLeft size={32} />
+             </div>
+          </div>
+
+          <div 
+            onMouseEnter={() => setPanDirection(-1)} 
+            onMouseLeave={() => setPanDirection(0)}
+            style={{ position: 'absolute', right: 0, top: 0, bottom: 0, width: '15vw', minWidth: '80px', pointerEvents: 'auto', display: 'flex', alignItems: 'center', justifyContent: 'flex-end', paddingRight: '2vw', cursor: 'grab' }}
+          >
+             <div 
+               style={hoverBtnStyle}
+               onMouseOver={(e) => {
+                 e.currentTarget.style.transform = 'scale(1.1)';
+                 e.currentTarget.style.background = 'var(--accent-admin)';
+                 e.currentTarget.style.borderColor = 'var(--accent-admin)';
+                 e.currentTarget.style.boxShadow = '0 10px 40px var(--accent-admin-glow), inset 0 0 20px rgba(255,255,255,0.4)';
+               }}
+               onMouseOut={(e) => {
+                 e.currentTarget.style.transform = 'scale(1)';
+                 e.currentTarget.style.background = 'rgba(15, 23, 42, 0.8)';
+                 e.currentTarget.style.borderColor = 'var(--border)';
+                 e.currentTarget.style.boxShadow = '0 10px 30px rgba(0,0,0,0.5), inset 0 0 20px rgba(255,255,255,0.05)';
+               }}
+             >
+               <ChevronRight size={32} />
+             </div>
+          </div>
         </div>
 
-        <div style={{ position: 'relative' }}>
-           <div style={{ position: 'absolute', top: 0, left: 0, bottom: 0, width: '150px', background: 'linear-gradient(to right, var(--bg), transparent)', zIndex: 2 }} />
-           <div style={{ position: 'absolute', top: 0, right: 0, bottom: 0, width: '150px', background: 'linear-gradient(to left, var(--bg), transparent)', zIndex: 2 }} />
-           <ParallaxRow items={cloudRow} x={x3} color="#10b981" /> {/* Emerald color for cloud */}
+        {/* Endless Scroll Rows */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', pointerEvents: 'none' }}>
+          
+          <div style={{ position: 'relative' }}>
+             <div style={{ position: 'absolute', top: 0, left: 0, bottom: 0, width: '200px', background: 'linear-gradient(to right, var(--bg) 20%, transparent)', zIndex: 2 }} />
+             <div style={{ position: 'absolute', top: 0, right: 0, bottom: 0, width: '200px', background: 'linear-gradient(to left, var(--bg) 20%, transparent)', zIndex: 2 }} />
+             <InfiniteMarquee 
+                items={devRow} 
+                baseSpeed={0.3} 
+                panDirection={panDirection} 
+                scrollMultiplier={-600} 
+                color="var(--accent-dev)" 
+                scrollYProgress={scrollYProgress} 
+             />
+          </div>
+          
+          <div style={{ position: 'relative' }}>
+             <div style={{ position: 'absolute', top: 0, left: 0, bottom: 0, width: '200px', background: 'linear-gradient(to right, var(--bg) 20%, transparent)', zIndex: 2 }} />
+             <div style={{ position: 'absolute', top: 0, right: 0, bottom: 0, width: '200px', background: 'linear-gradient(to left, var(--bg) 20%, transparent)', zIndex: 2 }} />
+             <InfiniteMarquee 
+                items={adminRow} 
+                baseSpeed={-0.2} 
+                panDirection={panDirection} 
+                scrollMultiplier={600} 
+                color="var(--accent-admin)" 
+                scrollYProgress={scrollYProgress} 
+             />
+          </div>
+
+          <div style={{ position: 'relative' }}>
+             <div style={{ position: 'absolute', top: 0, left: 0, bottom: 0, width: '200px', background: 'linear-gradient(to right, var(--bg) 20%, transparent)', zIndex: 2 }} />
+             <div style={{ position: 'absolute', top: 0, right: 0, bottom: 0, width: '200px', background: 'linear-gradient(to left, var(--bg) 20%, transparent)', zIndex: 2 }} />
+             <InfiniteMarquee 
+                items={cloudRow} 
+                baseSpeed={0.4} 
+                panDirection={panDirection} 
+                scrollMultiplier={-800} 
+                color="#10b981" 
+                scrollYProgress={scrollYProgress} 
+             />
+          </div>
+
         </div>
       </div>
     </section>

@@ -124,6 +124,7 @@ ul {
   }
   
   .bento-span-8 { grid-column: span 8; }
+  .bento-span-6 { grid-column: span 6; }
   .bento-span-4 { grid-column: span 4; }
   .bento-span-full { grid-column: 1 / -1; }
 }
@@ -133,5 +134,20 @@ ul {
   .section-title {
     font-size: 2.2rem;
     margin-bottom: 2rem;
+  }
+  
+  /* Vertical Timeline Mobile Adjustments */
+  .timeline-line {
+    left: 25px !important;
+  }
+  .timeline-spacer {
+    display: none !important;
+  }
+  .timeline-item {
+    flex-direction: row !important;
+  }
+  .timeline-content {
+    width: calc(100% - 65px) !important;
+    margin-left: auto;
   }
 }

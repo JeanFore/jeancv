@@ -26,14 +26,20 @@ const translations: Record<Language, Record<string, string>> = {
     education: "Academic Foundation",
     focusAreas: "Focus Areas",
     professionalNarrative: "Professional Narrative",
-    theDeveloper: "The Developer",
-    theAdministrator: "The Administrator",
-    devDescription: "Focused on clean architecture and scalable systems. Expert in Java, NestJS, and cloud-native deployments. Transformed complex business logic into efficient APIs and high-performance backend services.",
-    adminDescription: "9+ years managing budgets, resources, and architectural projects. Brings a disciplined financial perspective and strategic planning mindset to every software project.",
+    theDeveloper: "Software Architect & Tech Lead",
+    theAdministrator: "Financial Strategist & Manager",
+    devDescription: "Engineers highly resilient, cloud-native backend systems. Specializes in translating dense business rules into elegant, scalable microservices using Java and NestJS, driving high-performance APIs that power enterprise solutions.",
+    adminDescription: "Leverages a decade of executive experience in budget control, risk management, and architectural planning. Fuses advanced deductive logic with strategic financial modeling to guarantee bulletproof project execution.",
     completed: "Completed",
     location: "Location",
     status: "Status",
-    statusValue: "Available for strategic technical roles"
+    statusValue: "Available for strategic technical roles",
+    skillsSubtitle: "A hybrid skill set blending modern software engineering with strategic administrative leadership.",
+    skillsHint: "Hover over the side buttons to navigate.",
+    educationSubtitle: "Academic development and educational milestones",
+    aptitudes: "Key Aptitudes",
+    contact: "Contact",
+    contactSubtitle: "Let's build something exceptional together."
   },
   es: {
     navAbout: "Sobre mí",
@@ -49,14 +55,20 @@ const translations: Record<Language, Record<string, string>> = {
     education: "Fundación Académica",
     focusAreas: "Áreas de Enfoque",
     professionalNarrative: "Narrativa Profesional",
-    theDeveloper: "El Desarrollador",
-    theAdministrator: "El Administrador",
-    devDescription: "Enfocado en arquitectura limpia y sistemas escalables. Experto en Java, NestJS y despliegues nativos de la nube. Transformó lógica de negocios compleja en APIs eficientes y servicios backend de alto rendimiento.",
-    adminDescription: "Más de 9 años gestionando presupuestos, recursos y proyectos arquitectónicos. Aporta una perspectiva financiera disciplinada y una mentalidad de planificación estratégica a cada proyecto de software.",
+    theDeveloper: "Arquitecto de Software & Tech Lead",
+    theAdministrator: "Estratega Financiero & Gestor",
+    devDescription: "Diseña e implementa sistemas backend resilientes y nativos de la nube. Especialista en traducir arquitecturas de negocio complejas en microservicios elegantes y altamente escalables con Java y NestJS, garantizando rendimiento a nivel empresarial.",
+    adminDescription: "Aprovecha más de una década de experiencia ejecutiva en control de presupuestos, gestión de riesgos y planeación de alto nivel. Fusiona un fuerte rigor analítico con modelado financiero avanzado para blindar la rentabilidad técnica de cada proyecto.",
     completed: "Completado",
     location: "Ubicación",
     status: "Estado",
-    statusValue: "Disponible para roles técnicos estratégicos"
+    statusValue: "Disponible para roles técnicos estratégicos",
+    skillsSubtitle: "Un conjunto híbrido con bases técnicas modernas y liderazgo estratégico.",
+    skillsHint: "Pasa el cursor sobre los botones laterales para navegar.",
+    educationSubtitle: "Desarrollo académico e hitos de formación",
+    aptitudes: "Aptitudes",
+    contact: "Contacto",
+    contactSubtitle: "Construyamos algo excepcional juntos."
   }
 };
 

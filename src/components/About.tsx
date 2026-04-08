@@ -44,8 +44,8 @@ const About: React.FC = () => {
         viewport={{ once: true }}
         className="bento-grid"
       >
-        {/* Developer Box - Spans 8 columns on large screens */}
-        <motion.div variants={itemVariants} className="glass bento-span-8" style={{ padding: '3rem', position: 'relative', overflow: 'hidden' }}>
+        {/* Developer Box - Spans half screens */}
+        <motion.div variants={itemVariants} className="glass bento-span-6" style={{ padding: '3rem', position: 'relative', overflow: 'hidden' }}>
           <div style={{ position: 'absolute', top: '-10%', right: '-5%', opacity: 0.05, transform: 'rotate(15deg)' }}>
             <Code2 size={240} color="var(--accent-dev)" />
           </div>
@@ -62,8 +62,8 @@ const About: React.FC = () => {
           </div>
         </motion.div>
 
-        {/* Administrator Box - Spans 4 columns */}
-        <motion.div variants={itemVariants} className="glass bento-span-4" style={{ padding: '3rem', position: 'relative', overflow: 'hidden' }}>
+        {/* Administrator Box - Spans half columns */}
+        <motion.div variants={itemVariants} className="glass bento-span-6" style={{ padding: '3rem', position: 'relative', overflow: 'hidden' }}>
           <div style={{ position: 'absolute', top: '-10%', right: '-5%', opacity: 0.05, transform: 'rotate(-15deg)' }}>
             <Briefcase size={200} color="var(--accent-admin)" />
           </div>
