@@ -1,9 +1,5 @@
 import React, { useRef, useState, useEffect } from 'react';
-<<<<<<< HEAD
 import { motion, useMotionValue, animate } from 'framer-motion';
-=======
-import { motion, useTransform, useMotionValue, animate } from 'framer-motion';
->>>>>>> 58b25b7d5f1e02ba3c1e674bc960d73fe0ee2a55
 import { useLanguage } from './LanguageContext';
 import { GraduationCap, ChevronLeft, ChevronRight } from 'lucide-react';
 
@@ -109,11 +105,7 @@ const Education: React.FC = () => {
   const [isMobile, setIsMobile] = useState(false);
   const [mobileStep, setMobileStep] = useState(0);
   const [desktopStep, setDesktopStep] = useState(0);
-<<<<<<< HEAD
   const [viewportWidth, setViewportWidth] = useState(0);
-=======
-  const [mobileCenterOffset, setMobileCenterOffset] = useState(0);
->>>>>>> 58b25b7d5f1e02ba3c1e674bc960d73fe0ee2a55
   const baseX = useMotionValue(0);
   const shiftAnimationRef = useRef<ReturnType<typeof animate> | null>(null);
 
@@ -133,10 +125,7 @@ const Education: React.FC = () => {
       if (!measureRef.current) return;
 
       setContentWidth(measureRef.current.offsetWidth);
-<<<<<<< HEAD
       setViewportWidth(viewportRef.current?.offsetWidth ?? window.innerWidth);
-=======
->>>>>>> 58b25b7d5f1e02ba3c1e674bc960d73fe0ee2a55
       const firstCard = measureRef.current.querySelector<HTMLElement>('[data-edu-card="true"]');
       if (!firstCard) return;
 
@@ -145,18 +134,9 @@ const Education: React.FC = () => {
       const nextStep = firstCard.offsetWidth + gap;
 
       if (isMobile) {
-<<<<<<< HEAD
         setMobileStep(nextStep);
       } else {
         setDesktopStep(nextStep);
-=======
-        const viewportWidth = viewportRef.current?.offsetWidth ?? window.innerWidth;
-        setMobileStep(nextStep);
-        setMobileCenterOffset(Math.max(0, (viewportWidth - firstCard.offsetWidth) / 2));
-      } else {
-        setDesktopStep(nextStep);
-        setMobileCenterOffset(0);
->>>>>>> 58b25b7d5f1e02ba3c1e674bc960d73fe0ee2a55
       }
     };
 
@@ -172,19 +152,6 @@ const Education: React.FC = () => {
     };
   }, []);
 
-<<<<<<< HEAD
-=======
-  const x = useTransform(() => {
-    if (contentWidth === 0) return "0px";
-    
-    // Core wrapping math block: keeps translation seamlessly trapped from 0 to Content Width
-    let unwrapped = baseX.get();
-    let wrapped = ((unwrapped % contentWidth) + contentWidth) % contentWidth;
-    const aligned = isMobile ? mobileCenterOffset - wrapped : -wrapped;
-    return `${aligned}px`;
-  });
-
->>>>>>> 58b25b7d5f1e02ba3c1e674bc960d73fe0ee2a55
   const generateCards = (isMeasured: boolean) => (
     <div 
       ref={isMeasured ? measureRef : null}
@@ -216,26 +183,17 @@ const Education: React.FC = () => {
   };
 
   const shiftCards = (side: 'left' | 'right') => {
-<<<<<<< HEAD
     if (contentWidth <= 0 || viewportWidth <= 0) return;
-=======
-    if (contentWidth <= 0) return;
->>>>>>> 58b25b7d5f1e02ba3c1e674bc960d73fe0ee2a55
 
     const mobileFallback = Math.min(window.innerWidth * 0.9, 360) + 16;
     const desktopFallback = 500 + 48;
     const step = isMobile
       ? (mobileStep > 0 ? mobileStep : mobileFallback)
       : (desktopStep > 0 ? desktopStep : desktopFallback);
-<<<<<<< HEAD
     const direction = side === 'right' ? -1 : 1;
     const minOffset = Math.min(0, viewportWidth - contentWidth);
     const unclampedTarget = baseX.get() + direction * step;
     const target = Math.max(minOffset, Math.min(0, unclampedTarget));
-=======
-    const direction = side === 'right' ? 1 : -1;
-    const target = baseX.get() + direction * step;
->>>>>>> 58b25b7d5f1e02ba3c1e674bc960d73fe0ee2a55
 
     shiftAnimationRef.current?.stop();
     shiftAnimationRef.current = animate(baseX, target, {
