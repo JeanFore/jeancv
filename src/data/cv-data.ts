@@ -223,8 +223,8 @@ export const cvData: Record<string, CVContent> = {
       address: 'Calle guerrero 395 CP 06900 CDMX',
       email: 'jebrfoal@gmail.com',
       phones: [
-        { label: 'Cell (Col)', number: '(+57) 313 255 6327', countryCode: 'CO' },
-        { label: 'Cell (Mx)', number: '(+52) 564 743 7768', countryCode: 'MX' }
+        { label: 'Phone (Col)', number: '(+57) 313 255 6327', countryCode: 'CO' },
+        { label: 'Phone (Mx)', number: '(+52) 564 743 7768', countryCode: 'MX' }
       ],
       social: {
         linkedin: 'https://www.linkedin.com/in/jeanbforero/',

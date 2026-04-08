@@ -224,6 +224,7 @@ ul {
   position: absolute;
   inset: 0;
   z-index: 1;
+  pointer-events: none;
   background:
     radial-gradient(circle at 74% 30%, rgba(56, 189, 248, 0.2), transparent 52%),
     linear-gradient(180deg, rgba(2, 6, 23, 0.1) 32%, rgba(2, 6, 23, 0.7) 100%);
@@ -237,6 +238,7 @@ ul {
   flex-direction: column;
   justify-content: flex-end;
   padding: 2rem;
+  pointer-events: none;
 }
 
 .contact-location-chip {

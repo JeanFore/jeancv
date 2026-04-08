@@ -180,7 +180,7 @@ const Contact: React.FC = () => {
             className="glass contact-location-card"
           >
             <div className="contact-globe-layer">
-              <Globe />
+              <Globe scale={0.82} />
             </div>
             <div className="contact-location-scrim" />
 

@@ -37,18 +37,48 @@ const Hero: React.FC = () => {
             background: 'linear-gradient(135deg, var(--accent-dev) 0%, transparent 50%, var(--accent-admin) 100%)',
             boxShadow: '0 0 40px rgba(59, 130, 246, 0.2), inset 0 0 20px rgba(0,0,0,0.5)',
           }}>
-            <img 
-              src={data.personal.image} 
-              alt={data.personal.name}
-              style={{
-                width: '100%',
-                height: '100%',
-                borderRadius: '50%',
-                objectFit: 'cover',
-                border: '6px solid var(--bg)',
-                backgroundColor: 'var(--bg-secondary)',
-              }}
-            />
+            <div style={{ position: 'relative', width: '100%', height: '100%' }}>
+              {/* Original Photo */}
+              <img 
+                src={data.personal.image} 
+                alt={data.personal.name}
+                style={{
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  width: '100%',
+                  height: '100%',
+                  borderRadius: '50%',
+                  objectFit: 'cover',
+                  border: '6px solid var(--bg)',
+                  backgroundColor: 'var(--bg-secondary)',
+                  boxSizing: 'border-box'
+                }}
+              />
+              {/* New Photo Crossfade */}
+              <motion.img 
+                src="/JeanDev.png" 
+                alt={`${data.personal.name} Alternative`}
+                animate={{ opacity: [0, 0, 1, 1, 0, 0] }}
+                transition={{ 
+                  duration: 16, 
+                  repeat: Infinity, 
+                  ease: "easeInOut", 
+                  times: [0, 0.125, 0.375, 0.625, 0.875, 1] 
+                }}
+                style={{
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  width: '100%',
+                  height: '100%',
+                  borderRadius: '50%',
+                  objectFit: 'cover',
+                  border: '6px solid var(--bg)',
+                  boxSizing: 'border-box'
+                }}
+              />
+            </div>
           </div>
           {/* Active Status Ring */}
           <motion.div 
