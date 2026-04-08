@@ -288,7 +288,7 @@ const About: React.FC = () => {
               <p
                 style={{
                   fontSize: '1.15rem',
-                  color: 'var(--fg-secondary)',
+                  color: 'rgba(226, 232, 240, 0.88)',
                   lineHeight: 1.8,
                   whiteSpace: 'pre-wrap',
                   maxWidth: '1200px',
