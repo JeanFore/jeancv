@@ -223,8 +223,8 @@ export const cvData: Record<string, CVContent> = {
       address: 'Calle guerrero 395 CP 06900 CDMX',
       email: 'jebrfoal@gmail.com',
       phones: [
-        { label: 'Cell (Col)', number: '+573132556327', countryCode: 'CO' },
-        { label: 'Cell (Mx)', number: '+525647437768', countryCode: 'MX' }
+        { label: 'Cell (Col)', number: '(+57) 313 255 6327', countryCode: 'CO' },
+        { label: 'Cell (Mx)', number: '(+52) 564 743 7768', countryCode: 'MX' }
       ],
       social: {
         linkedin: 'https://www.linkedin.com/in/jeanbforero/',
@@ -411,8 +411,8 @@ export const cvData: Record<string, CVContent> = {
       address: 'Calle guerrero 395 CP 06900 CDMX',
       email: 'jebrfoal@gmail.com',
       phones: [
-        { label: 'Cel (Col)', number: '+573132556327', countryCode: 'CO' },
-        { label: 'Cel (Mx)', number: '+525647437768', countryCode: 'MX' }
+        { label: 'Cel (Col)', number: '(+57) 313 255 6327', countryCode: 'CO' },
+        { label: 'Cel (Mx)', number: '(+52) 564 743 7768', countryCode: 'MX' }
       ],
       social: {
         linkedin: 'https://www.linkedin.com/in/jeanbforero/',
