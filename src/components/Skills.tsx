@@ -137,7 +137,10 @@ const Skills: React.FC = () => {
     border: '1px solid var(--border)',
     boxShadow: '0 10px 30px rgba(0,0,0,0.5), inset 0 0 20px rgba(255,255,255,0.05)',
     transition: 'all 0.3s ease',
-    color: 'var(--fg)'
+    color: 'var(--fg)',
+    outline: 'none',
+    userSelect: 'none' as const,
+    WebkitTapHighlightColor: 'transparent'
   };
 
   const startPan = (direction: number) => setPanDirection(direction);
@@ -190,15 +193,13 @@ const Skills: React.FC = () => {
           <div 
             onMouseEnter={() => !isMobile && startPan(1)} 
             onMouseLeave={stopPan}
-            onTouchStart={(event) => {
-              event.preventDefault();
+            onPointerDown={(event) => {
+              if (isMobile) event.preventDefault();
               startPan(1);
             }}
-            onTouchEnd={stopPan}
-            onTouchCancel={stopPan}
-            onPointerDown={() => startPan(1)}
             onPointerUp={stopPan}
             onPointerCancel={stopPan}
+            onPointerLeave={stopPan}
             style={
               isMobile
                 ? {
@@ -211,6 +212,9 @@ const Skills: React.FC = () => {
                     alignItems: 'center',
                     cursor: 'pointer',
                     touchAction: 'none',
+                    userSelect: 'none',
+                    WebkitTapHighlightColor: 'transparent',
+                    outline: 'none',
                   }
                 : {
                     position: 'absolute',
@@ -224,6 +228,9 @@ const Skills: React.FC = () => {
                     alignItems: 'center',
                     paddingLeft: '2vw',
                     cursor: 'grab',
+                    userSelect: 'none',
+                    WebkitTapHighlightColor: 'transparent',
+                    outline: 'none',
                   }
             }
           >
@@ -249,15 +256,13 @@ const Skills: React.FC = () => {
           <div 
             onMouseEnter={() => !isMobile && startPan(-1)} 
             onMouseLeave={stopPan}
-            onTouchStart={(event) => {
-              event.preventDefault();
+            onPointerDown={(event) => {
+              if (isMobile) event.preventDefault();
               startPan(-1);
             }}
-            onTouchEnd={stopPan}
-            onTouchCancel={stopPan}
-            onPointerDown={() => startPan(-1)}
             onPointerUp={stopPan}
             onPointerCancel={stopPan}
+            onPointerLeave={stopPan}
             style={
               isMobile
                 ? {
@@ -271,6 +276,9 @@ const Skills: React.FC = () => {
                     justifyContent: 'flex-end',
                     cursor: 'pointer',
                     touchAction: 'none',
+                    userSelect: 'none',
+                    WebkitTapHighlightColor: 'transparent',
+                    outline: 'none',
                   }
                 : {
                     position: 'absolute',
@@ -285,6 +293,9 @@ const Skills: React.FC = () => {
                     justifyContent: 'flex-end',
                     paddingRight: '2vw',
                     cursor: 'grab',
+                    userSelect: 'none',
+                    WebkitTapHighlightColor: 'transparent',
+                    outline: 'none',
                   }
             }
           >

@@ -4,11 +4,18 @@ import createGlobe from "cobe";
 import { useMotionValue, useSpring } from "framer-motion";
 import { useLanguage } from "./LanguageContext";
 
-const MOVEMENT_DAMPING = 1400;
+const MOVEMENT_DAMPING = 980;
 const AUTO_ROTATION_SPEED = 0.003;
 const GLOBE_THETA = 0.25;
 const GLOBE_RADIUS = 0.8;
 const MARKER_ELEVATION = 0.03;
+const MOBILE_BREAKPOINT = 768;
+const MARKER_SIZE_BASE_DESKTOP = 0.054;
+const MARKER_SIZE_WAVE_DESKTOP = 0.005;
+const MARKER_SIZE_ACTIVE_DESKTOP = 0.007;
+const MARKER_SIZE_BASE_MOBILE = 0.041;
+const MARKER_SIZE_WAVE_MOBILE = 0.0035;
+const MARKER_SIZE_ACTIVE_MOBILE = 0.005;
 
 type LocalizedText = {
   es: string;
@@ -113,6 +120,9 @@ export function Globe({ scale = 0.84 }: GlobeProps) {
 
   const [hoveredPointId, setHoveredPointId] = useState<string | null>(null);
   const [activePointId, setActivePointId] = useState<string | null>(null);
+  const [isMobileViewport, setIsMobileViewport] = useState<boolean>(() =>
+    typeof window !== "undefined" ? window.innerWidth <= MOBILE_BREAKPOINT : false,
+  );
 
   const vectorsById = useMemo(
     () =>
@@ -129,8 +139,8 @@ export function Globe({ scale = 0.84 }: GlobeProps) {
   const r = useMotionValue(0);
   const rs = useSpring(r, {
     mass: 1,
-    damping: 40,
-    stiffness: 280,
+    damping: 30,
+    stiffness: 380,
     restDelta: 0.001,
   });
 
@@ -141,6 +151,13 @@ export function Globe({ scale = 0.84 }: GlobeProps) {
   useEffect(() => {
     activePointRef.current = activePointId;
   }, [activePointId]);
+
+  useEffect(() => {
+    const syncViewport = () => setIsMobileViewport(window.innerWidth <= MOBILE_BREAKPOINT);
+    syncViewport();
+    window.addEventListener("resize", syncViewport);
+    return () => window.removeEventListener("resize", syncViewport);
+  }, []);
 
   const updatePointerInteraction = (value: number | null) => {
     pointerInteracting.current = value;
@@ -217,7 +234,10 @@ export function Globe({ scale = 0.84 }: GlobeProps) {
         markerColor: [251 / 255, 100 / 255, 21 / 255],
         glowColor: [0.9, 0.94, 1],
         markerElevation: MARKER_ELEVATION,
-        markers: GLOBE_POINTS.map((point) => ({ location: point.location, size: 0.075 })),
+        markers: GLOBE_POINTS.map((point) => ({
+          location: point.location,
+          size: isMobileViewport ? MARKER_SIZE_BASE_MOBILE : MARKER_SIZE_BASE_DESKTOP,
+        })),
       });
 
       const animate = () => {
@@ -236,7 +256,13 @@ export function Globe({ scale = 0.84 }: GlobeProps) {
           height: widthRef.current * 2,
           markers: GLOBE_POINTS.map((point, index) => ({
             location: point.location,
-            size: 0.073 + Math.sin(now + index * 0.9) * 0.008 + (activePointRef.current === point.id ? 0.01 : 0),
+            size: isMobileViewport
+              ? MARKER_SIZE_BASE_MOBILE +
+                Math.sin(now + index * 0.9) * MARKER_SIZE_WAVE_MOBILE +
+                (activePointRef.current === point.id ? MARKER_SIZE_ACTIVE_MOBILE : 0)
+              : MARKER_SIZE_BASE_DESKTOP +
+                Math.sin(now + index * 0.9) * MARKER_SIZE_WAVE_DESKTOP +
+                (activePointRef.current === point.id ? MARKER_SIZE_ACTIVE_DESKTOP : 0),
           })),
         });
 
@@ -271,7 +297,7 @@ export function Globe({ scale = 0.84 }: GlobeProps) {
       if (globe) globe.destroy();
       resizeObserver.disconnect();
     };
-  }, [rs, vectorsById]);
+  }, [isMobileViewport, rs, vectorsById]);
 
   useEffect(() => {
     if (!activePointId) return;
@@ -369,6 +395,12 @@ export function Globe({ scale = 0.84 }: GlobeProps) {
         )
       : null;
 
+  const markerUiSize = isMobileViewport ? 13 : 18;
+  const markerUiBorder = isMobileViewport ? 1.3 : 1.6;
+  const markerUiHalo = isMobileViewport ? 2.4 : 3;
+  const markerUiShadow = isMobileViewport ? "0 5px 12px rgba(0,0,0,0.45)" : "0 6px 14px rgba(0,0,0,0.45)";
+  const markerUiInset = isMobileViewport ? -4 : -5;
+
   return (
     <>
       <div
@@ -443,12 +475,12 @@ export function Globe({ scale = 0.84 }: GlobeProps) {
                   position: "absolute",
                   left: "50%",
                   top: "50%",
-                  width: "24px",
-                  height: "24px",
+                  width: `${markerUiSize}px`,
+                  height: `${markerUiSize}px`,
                   borderRadius: "999px",
-                  border: `2px solid ${toRgba(point.color, 0.95)}`,
+                  border: `${markerUiBorder}px solid ${toRgba(point.color, 0.95)}`,
                   background: `linear-gradient(145deg, ${toRgba(point.color, 0.96)}, ${toRgba(point.color, 0.74)})`,
-                  boxShadow: `0 0 0 4px ${toRgba(point.color, 0.26)}, 0 8px 18px rgba(0,0,0,0.45)`,
+                  boxShadow: `0 0 0 ${markerUiHalo}px ${toRgba(point.color, 0.24)}, ${markerUiShadow}`,
                   cursor: "pointer",
                   zIndex: 8,
                   opacity: 0,
@@ -459,7 +491,7 @@ export function Globe({ scale = 0.84 }: GlobeProps) {
                 <span
                   style={{
                     position: "absolute",
-                    inset: "-7px",
+                    inset: `${markerUiInset}px`,
                     borderRadius: "999px",
                     border: `1px solid ${point.color}88`,
                   }}

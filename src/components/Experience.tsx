@@ -82,12 +82,12 @@ const TimelineItem: React.FC<{ xp: any; index: number }> = ({ xp, index }) => {
         className="timeline-content"
       >
         <div 
-          className="glass" 
+          className="glass experience-card" 
           style={{ 
             padding: '2.5rem', 
             position: 'relative',
             borderTop: `4px solid ${color}`,
-            background: `linear-gradient(135deg, ${bgSoft}, rgba(17, 24, 39, 0.4))`,
+            background: `linear-gradient(135deg, ${bgSoft}, var(--experience-card-bg-strong, rgba(17, 24, 39, 0.9)))`,
             transition: 'transform 0.3s ease, box-shadow 0.3s ease'
           }}
           onMouseOver={(e) => {

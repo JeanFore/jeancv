@@ -22,7 +22,7 @@ function App() {
         <Contact />
 
         <footer style={{ padding: '4rem 0', textAlign: 'center', opacity: 0.5, fontSize: '0.9rem' }}>
-          <p>&copy; {new Date().getFullYear()} Jean Breiner Forero. Built with React & Framer Motion.</p>
+          <p>&copy; {new Date().getFullYear()} Jean Breiner Forero.</p>
         </footer>
       </div>
     </div>
