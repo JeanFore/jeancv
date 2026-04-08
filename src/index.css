@@ -1098,8 +1098,17 @@ ul {
   line-height: 1.1;
 }
 
+.contact-social-identifier {
+  margin-top: 0.22rem;
+  color: #e2e8f0;
+  font-size: 0.9rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  overflow-wrap: anywhere;
+}
+
 .contact-social-caption {
-  margin-top: 0.2rem;
+  margin-top: 0.28rem;
   color: var(--fg-secondary);
   font-size: 0.92rem;
   display: inline-flex;
@@ -1345,6 +1354,10 @@ ul {
 
   .contact-social-title {
     font-size: 1.06rem;
+  }
+
+  .contact-social-identifier {
+    font-size: 0.82rem;
   }
 
   .contact-social-caption {

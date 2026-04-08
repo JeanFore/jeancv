@@ -8,8 +8,33 @@ type SocialLink = {
   name: string;
   href: string;
   hint: string;
+  identifier: string;
   variant: 'gmail' | 'linkedin' | 'github';
   iconSvg: string;
+};
+
+const getLinkedInIdentifier = (url: string) => {
+  try {
+    const parsed = new URL(url);
+    const parts = parsed.pathname.split('/').filter(Boolean);
+    if (parts.length === 0) return url;
+    const inIndex = parts.findIndex((part) => part.toLowerCase() === 'in');
+    const raw = inIndex >= 0 && inIndex + 1 < parts.length ? parts[inIndex + 1] : parts[parts.length - 1];
+    return `@${raw}`;
+  } catch {
+    return url;
+  }
+};
+
+const getGithubIdentifier = (url: string) => {
+  try {
+    const parsed = new URL(url);
+    const parts = parsed.pathname.split('/').filter(Boolean);
+    if (parts.length === 0) return url;
+    return `@${parts[0]}`;
+  } catch {
+    return url;
+  }
 };
 
 const GMAIL_ICON_SVG = `
@@ -121,6 +146,7 @@ const Contact: React.FC = () => {
       name: 'Gmail',
       href: `mailto:${contact.email}`,
       hint: language === 'es' ? 'Correo directo' : 'Direct email',
+      identifier: contact.email,
       variant: 'gmail',
       iconSvg: GMAIL_ICON_SVG,
     },
@@ -128,6 +154,7 @@ const Contact: React.FC = () => {
       name: 'LinkedIn',
       href: contact.social.linkedin,
       hint: language === 'es' ? 'Perfil profesional' : 'Professional profile',
+      identifier: getLinkedInIdentifier(contact.social.linkedin),
       variant: 'linkedin',
       iconSvg: LINKEDIN_ICON_SVG,
     },
@@ -135,6 +162,7 @@ const Contact: React.FC = () => {
       name: 'GitHub',
       href: contact.social.github,
       hint: language === 'es' ? 'Repositorios' : 'Repositories',
+      identifier: getGithubIdentifier(contact.social.github),
       variant: 'github',
       iconSvg: GITHUB_ICON_SVG,
     },
@@ -259,6 +287,7 @@ const Contact: React.FC = () => {
                       <div className="contact-social-icon" dangerouslySetInnerHTML={{ __html: item.iconSvg }} />
                       <div className="contact-social-text">
                         <p className="contact-social-title">{item.name}</p>
+                        <p className="contact-social-identifier">{item.identifier}</p>
                         <p className="contact-social-caption">
                           {item.hint}
                           <ExternalLink size={12} />
